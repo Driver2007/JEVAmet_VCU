@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ASCII"?>
 <pogoDsl:PogoSystem xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pogoDsl="http://www.esrf.fr/tango/pogo/PogoDsl">
   <classes name="JEVAmet_VCU" pogoRevision="9.4">
-    <description description="JEVAmet_VCU" title="JEVAmet_VCU" sourcePath="/home/user/bin/TangoServers/JEVAmet_VCU" language="Python" filestogenerate="XMI   file,Code files,Protected Regions" license="GPL" copyright="" hasMandatoryProperty="false" hasConcreteProperty="true" hasAbstractCommand="false" hasAbstractAttribute="false">
+    <description description="JEVAmet_VCU" title="JEVAmet_VCU" sourcePath="/home/user/build/TangoServers/Scattering_Setup/JEVAmet_VCU_spin_gun" language="Python" filestogenerate="XMI   file,Code files,Protected Regions" license="GPL" copyright="" hasMandatoryProperty="false" hasConcreteProperty="true" hasAbstractCommand="false" hasAbstractAttribute="false">
       <inheritances classname="Device_Impl" sourcePath=""/>
       <identification contact="at gmail.com - sergey.v.babenkov" author="sergey.v.babenkov" emailDomain="gmail.com" classFamily="Acquisition" siteSpecific="" platform="All Platforms" bus="Socket" manufacturer="JEVATEC" reference=""/>
     </description>
     <deviceProperties name="Hardware_IP" description="">
       <type xsi:type="pogoDsl:StringType"/>
       <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
-      <DefaultPropValue>192.168.3.112</DefaultPropValue>
+      <DefaultPropValue>192.168.3.221</DefaultPropValue>
     </deviceProperties>
     <deviceProperties name="Hardware_Port" description="">
       <type xsi:type="pogoDsl:StringType"/>
@@ -40,6 +40,14 @@
       <dataReadyEvent fire="false" libCheckCriteria="true"/>
       <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
       <properties description="" label="" unit="" standardUnit="" displayUnit="" format="%6.2f" maxValue="" minValue="" maxAlarm="" minAlarm="" maxWarning="" minWarning="" deltaTime="" deltaValue=""/>
+    </attributes>
+    <attributes name="log_delay" attType="Scalar" rwType="WRITE" displayLevel="OPERATOR" polledPeriod="0" maxX="" maxY="" memorized="true" memorizedAtInit="true" allocReadMember="false" isDynamic="false">
+      <dataType xsi:type="pogoDsl:DoubleType"/>
+      <changeEvent fire="false" libCheckCriteria="false"/>
+      <archiveEvent fire="false" libCheckCriteria="false"/>
+      <dataReadyEvent fire="false" libCheckCriteria="true"/>
+      <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
+      <properties description="" label="" unit="" standardUnit="" displayUnit="" format="" maxValue="" minValue="" maxAlarm="" minAlarm="" maxWarning="" minWarning="" deltaTime="" deltaValue=""/>
     </attributes>
     <preferences docHome="./doc_html" makefileHome="/usr/local/share/pogo/preferences"/>
   </classes>

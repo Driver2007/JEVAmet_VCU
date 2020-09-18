@@ -7,7 +7,7 @@ trap "pkill -P $$; sleep 2; pkill --signal SIGKILL -P $$" EXIT
 # command to launch the Tango Server
 # launch Tango Server in background (don't forget & at the end of the line) !!
 
-cd /home/user/bin/TangoServers/JEVAmet_VCU
+cd /home/user/build/TangoServers/Scattering_Setup/JEVAmet_VCU_spin_gun
 python JEVAmet_VCU.py i0 &
 
 while true; do sleep 3600; done

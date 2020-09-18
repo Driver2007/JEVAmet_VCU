@@ -49,6 +49,8 @@ import sys
 from VCU_protocol import VCU_protocol
 import threading
 import time
+import datetime
+import os
 #----- PROTECTED REGION END -----#	//	JEVAmet_VCU.additionnal_import
 
 # Device States Description
@@ -68,10 +70,15 @@ class JEVAmet_VCU (PyTango.Device_4Impl):
         self.debug_stream("In __init__()")
         JEVAmet_VCU.init_device(self)
         #----- PROTECTED REGION ID(JEVAmet_VCU.__init__) ENABLED START -----#
+        self.log_delay = 5.0
         if not 'pingthread' in dir(self):
-            self.pingthread = threading.Thread(target=self.periodic_device_ping)
+            self.pingthread = threading.Thread(target = self.periodic_device_ping)
             self.pingthread.setDaemon(True)
-            self.pingthread.start()        
+            self.pingthread.start()  
+        if not 'log' in dir(self):
+            self.log = threading.Thread(target = self.log_tread)
+            self.log.setDaemon(True)
+            self.log.start() 
         #----- PROTECTED REGION END -----#	//	JEVAmet_VCU.__init__
         
     def delete_device(self):
@@ -107,8 +114,15 @@ class JEVAmet_VCU (PyTango.Device_4Impl):
             self.attr_Vacuum_read = self.hwcommun.vacuum()
             print (self.attr_Vacuum_read)
         attr.set_value(self.attr_Vacuum_read)
-        
+              
         #----- PROTECTED REGION END -----#	//	JEVAmet_VCU.Vacuum_read
+        
+    def write_log_delay(self, attr):
+        self.debug_stream("In write_log_delay()")
+        data = attr.get_write_value()
+        #----- PROTECTED REGION ID(JEVAmet_VCU.log_delay_write) ENABLED START -----#
+        self.log_delay = data
+        #----- PROTECTED REGION END -----#	//	JEVAmet_VCU.log_delay_write
         
     
     
@@ -133,7 +147,17 @@ class JEVAmet_VCU (PyTango.Device_4Impl):
         attr.set_default_properties(prop)
         self.add_attribute(attr, self.read_Reconnect_Trigger, self.write_Reconnect_Trigger)
     
-        
+    def log_tread(self):
+        while True:
+            today = datetime.datetime.now()
+            if self.attr_Vacuum_read == 0:
+                continue
+            with open("/home/user/build/TangoServers/Scattering_Setup/logs/Vacuum_Microscope/log_{}_{}_{}.txt".format(today.year, today.month, today.day), "a") as logfile:
+                now = str(today.hour) + ":" + str(today.minute)+ ":" + str(today.second)
+                logfile.write("{}\t{}\r".format(now, self.attr_Vacuum_read))
+                
+            time.sleep(5)
+            
     def periodic_device_ping(self):
         if not 'hwcommun' in dir(self) or self.hwcommun==None:
             return
@@ -146,24 +170,24 @@ class JEVAmet_VCU (PyTango.Device_4Impl):
                 pass
             if self.hwcommun.last_comm_timeout:
                 self.set_state(PyTango.DevState.FAULT)
-                print "Device ping got no answer"
+                print ("Device ping got no answer")
             elif not self.hwcommun.connected:
                 self.set_state(PyTango.DevState.OFF)
-                print "Connection to device lost"
+                print ("Connection to device lost")
             else:
                 self.set_state(PyTango.DevState.ON)
                 
     def connectToHardware(self):
         if 'hwcommun' in dir(self) and self.hwcommun!=None:
             if self.hwcommun.last_comm_timeout or not self.hwcommun.connected:
-                print "I will try to reconnect"
+                print ("I will try to reconnect")
                 self.hwcommun.reconnect()
                 if self.hwcommun.connected==True:
                     self.set_state(PyTango.DevState.ON)
                 else:
                     self.set_state(PyTango.DevState.OFF)
             else:
-                print "Device has already been initialized!"
+                print ("Device has already been initialized!")
                 return
         else:
             self.hwcommun = VCU_protocol(self.Hardware_IP, self.Hardware_Port)
@@ -196,11 +220,11 @@ class JEVAmet_VCUClass(PyTango.DeviceClass):
         'Hardware_IP':
             [PyTango.DevString, 
              '',
-            ["192.168.3.112"] ],
+            ["192.168.3.221"] ],
         'Hardware_Port':
             [PyTango.DevString, 
              '',
-            ["100"] ],
+            ["101"] ],
         }
 
 
@@ -217,6 +241,13 @@ class JEVAmet_VCUClass(PyTango.DeviceClass):
             PyTango.READ],
             {
                 'format': "%6.2f",
+            } ],
+        'log_delay':
+            [[PyTango.DevDouble,
+            PyTango.SCALAR,
+            PyTango.WRITE],
+            {
+                'Memorized':"true"
             } ],
         }
 

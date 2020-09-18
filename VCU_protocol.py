@@ -24,7 +24,7 @@ class VCU_protocol:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connected = False
         self.last_comm_timeout = False
-        print "Connecting to Host", self.host, ", Port", self.port
+        print ("Connecting to Host", self.host, ", Port", self.port)
         try:
             self.sock.setblocking(1)
         except:
@@ -32,27 +32,28 @@ class VCU_protocol:
         try:
             self.sock.connect((self.host, self.port))
         except Exception as e:
-            print "Exception occured while connecting"
-            print e.__class__
-            print e
+            print ("Exception occured while connecting")
+            print (e.__class__)
+            print (e)
             self.connected = False
         else:
-            print "Success."
+            print ("Success.")
             resp = ""
             try:
                 resp += self.sock.recv(10000)
             except socket.error:
                 pass
-            #print "resp0=",resp
+            print ("resp = ",resp)
             self.connected = True
         self.sock.setblocking(0)
       
     def vacuum(self):
         resp = self.communicate("RPV1")
         #print resp
-        _,value=resp.split(",")
-        vacuum=float(value)       
-        return vacuum
+        _,value=resp.split("\t")
+        vacuum=float(value) 
+        return (vacuum)
+        
     def OnOff(self,state):
         resp=self.communicate("SHV1,"+str(state))
         
@@ -72,7 +73,6 @@ class VCU_protocol:
                 resp += self.sock.recv(10000)
             except socket.error:
                 pass
-            #print "resp=",resp
             return resp
 
 """
